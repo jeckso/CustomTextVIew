@@ -16,8 +16,8 @@ class CustomFragment : BaseFragment<RootAttrViewModel, FragmentCustomBinding>() 
     companion object {
         const val TAG = "AttributesFragment"
         const val TITLE_TAG = "title.tag"
-        fun newInstance(): AttributesFragment {
-            return AttributesFragment()
+        fun newInstance(): CustomFragment {
+            return CustomFragment()
         }
     }
 
