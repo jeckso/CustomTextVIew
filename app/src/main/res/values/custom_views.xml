@@ -115,23 +115,6 @@
         <attr name="urlTextUnderlineColorG" format="integer" />
         <attr name="urlTextUnderlineColorClear" format="boolean" />
         <attr name="urlTextUnderlineThickness" format="integer" />
-
-
-
-
-
-
-
-
-
-
-
-        <attr name="primaryText" format="string" />
-        <attr name="secondaryText" format="string" />
-        <attr name="price" format="string" />
-        <attr name="priceSecondary" format="string" />
-        <attr name="colorPrimary" format="color" />
-        <attr name="logoBackground" format="reference" />
     </declare-styleable>
 
 
