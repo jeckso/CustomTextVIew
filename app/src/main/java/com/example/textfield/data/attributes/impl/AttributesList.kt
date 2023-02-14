@@ -81,5 +81,4 @@ val listAttributes = listOf<IAttribute>(
     BooleanAttribute("URL Text Underline Color Clear"),
     IntAttribute("URL Text Underline Thickness"),
 
-
     )

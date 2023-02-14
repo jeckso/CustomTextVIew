@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="align" format="integer">
+        <enum name="left" value="0" />
+        <enum name="right" value="1" />
+        <enum name="center" value="2" />
+    </attr>
+
+    <attr name="font" format="integer">
+        <enum name="Steagal-Regular" value="0" />
+        <enum name="Steagal-Medium" value="1" />
+    </attr>
+
+    <attr name="keyboardType" format="integer">
+        <enum name="NumberPad" value="0" />
+        <enum name="emailAddress" value="1" />
+    </attr>
+
+    <attr name="positionXRel" format="integer">
+        <enum name="left" value="0" />
+        <enum name="right" value="1" />
+        <enum name="center" value="2" />
+    </attr>
+
+    <attr name="positionYRel" format="integer">
+        <enum name="top" value="0" />
+        <enum name="bottom" value="1" />
+        <enum name="center" value="2" />
+    </attr>
+
+
+
+    <attr name="urlTextAlign" format="integer">
+        <enum name="left" value="0" />
+        <enum name="right" value="1" />
+        <enum name="center" value="2" />
+    </attr>
+
+    <attr name="urlTextFont" format="integer">
+        <enum name="Steagal-Regular" value="0" />
+        <enum name="Steagal-Medium" value="1" />
+    </attr>
+
+
+    <declare-styleable name="CustomTextField">
+        <attr name="align"/>
+        <attr name="bgColorR" format="integer" />
+        <attr name="bgColorG" format="integer" />
+        <attr name="bgColorB" format="integer" />
+        <attr name="bgColorClear" format="boolean" />
+        <attr name="borderColorR" format="integer" />
+        <attr name="borderColorG" format="integer" />
+        <attr name="borderColorB" format="integer" />
+        <attr name="borderColorClear" format="boolean" />
+        <attr name="borderWidth" format="integer" />
+        <attr name="borderPadding" format="integer" />
+        <attr name="colorR" format="integer" />
+        <attr name="colorG" format="integer" />
+        <attr name="colorB" format="integer" />
+        <attr name="colorClear" format="boolean" />
+        <attr name="content" format="string" />
+        <attr name="defaultText" format="string" />
+        <attr name="dtColorR" format="integer" />
+        <attr name="dtColorG" format="integer" />
+        <attr name="dtColorB" format="integer" />
+        <attr name="dtColorClear" format="boolean" />
+        <attr name="executionDelay" format="float" />
+        <attr name="firstResponder" format="boolean" />
+        <attr name="font"/>
+        <attr name="fontSize" format="integer" />
+        <attr name="identifier" format="string" />
+        <attr name="input" format="boolean" />
+        <attr name="inputFieldHeightDynamic" format="boolean" />
+        <attr name="keyboardType"/>
+        <attr name="leftPadding" format="integer" />
+        <attr name="lines" format="integer" />
+        <attr name="lineSpace" format="integer" />
+        <attr name="maxStroke" format="integer" />
+        <attr name="nextResponder" format="string" />
+        <attr name="positionX" format="integer" />
+        <attr name="positionY" format="integer" />
+        <attr name="positionXRel" format="integer" />
+        <attr name="positionYRel" format="integer" />
+        <attr name="radius" format="integer" />
+        <attr name="rightPadding" format="integer" />
+        <attr name="rimPadding" format="integer" />
+        <attr name="scroll" format="boolean" />
+        <attr name="secureTextEntry" format="boolean" />
+        <attr name="shadowColorR" format="integer" />
+        <attr name="shadowColorG" format="integer" />
+        <attr name="shadowColorB" format="integer" />
+        <attr name="shadowColorClear" format="boolean" />
+        <attr name="shadowOffset" format="integer" />
+        <attr name="shadowOpacity" format="float" />
+        <attr name="shadowRadius" format="integer" />
+        <attr name="shadowHeight" format="integer" />
+        <attr name="shadowWidth" format="integer" />
+        <attr name="shadowMinHeight" format="integer" />
+        <attr name="shadowMinWidth" format="integer" />
+        <attr name="underlineColorR" format="integer" />
+        <attr name="underlineColorG" format="integer" />
+        <attr name="underlineColorB" format="integer" />
+        <attr name="underlineClear" format="boolean" />
+        <attr name="underlineThickness" format="integer" />
+        <attr name="urlLink" format="string" />
+        <attr name="urlTextAlign" />
+        <attr name="urlTextColorR" format="integer" />
+        <attr name="urlTextColorG" format="integer" />
+        <attr name="urlTextColorB" format="integer" />
+        <attr name="urlTextColorClear" format="integer" />
+        <attr name="urlTextContent" format="string" />
+        <attr name="urlTextFont" />
+        <attr name="urlTextFontSize" format="integer" />
+        <attr name="urlTextUnderlineColorR" format="integer" />
+        <attr name="urlTextUnderlineColorG" format="integer" />
+        <attr name="urlTextUnderlineColorClear" format="boolean" />
+        <attr name="urlTextUnderlineThickness" format="integer" />
+
+
+
+
+
+
+
+
+
+
+
+        <attr name="primaryText" format="string" />
+        <attr name="secondaryText" format="string" />
+        <attr name="price" format="string" />
+        <attr name="priceSecondary" format="string" />
+        <attr name="colorPrimary" format="color" />
+        <attr name="logoBackground" format="reference" />
+    </declare-styleable>
+
+
+</resources>
