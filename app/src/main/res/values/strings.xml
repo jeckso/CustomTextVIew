@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">Textfield</string>
+    <string name="first_screen">Input For Field 1</string>
+    <string name="second_screen">Input For Field 2</string>
+    <string name="third_screen">Input For Field 3</string>
 </resources>

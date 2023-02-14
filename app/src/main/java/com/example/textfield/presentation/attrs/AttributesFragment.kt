@@ -4,26 +4,32 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import com.example.textfield.databinding.FragmentInputBinding
 import com.example.textfield.presentation.attrs.list.AttributesAdapter
+import com.example.textfield.presentation.attrs.root.RootAttrViewModel
 import com.example.textfield.presentation.base.BaseFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class AttributesFragment : BaseFragment<AttributesVM, FragmentInputBinding>() {
+class AttributesFragment : BaseFragment<RootAttrViewModel, FragmentInputBinding>() {
 
 
     companion object {
         const val TAG = "AttributesFragment"
-        fun newInstance(): AttributesFragment {
-            return AttributesFragment()
+        const val TITLE_TAG = "title.tag"
+        fun newInstance(title: String): AttributesFragment {
+            return AttributesFragment().apply {
+                arguments = bundleOf(TITLE_TAG to title)
+            }
         }
     }
 
     private val adapter = AttributesAdapter()
 
-    override val viewModel: AttributesVM by viewModels()
+    override val viewModel: RootAttrViewModel by viewModels(ownerProducer = { requireParentFragment() })
+
 
     override fun inflateViewBinding(
         inflater: LayoutInflater,
@@ -43,6 +49,10 @@ class AttributesFragment : BaseFragment<AttributesVM, FragmentInputBinding>() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewBinding.setupRecyclerView()
+        viewBinding.buttonNext.setOnClickListener {
+            viewModel.navigateNext()
+        }
+        viewBinding.title.text = arguments?.getString(TITLE_TAG)?:""
 
     }
 

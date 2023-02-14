@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import androidx.activity.viewModels
 import com.example.textfield.databinding.ActivityMainBinding
 import com.example.textfield.presentation.attrs.AttributesFragment
+import com.example.textfield.presentation.attrs.root.RootAttrFragment
 import com.example.textfield.presentation.base.BaseActivity
 import com.example.textfield.presentation.base.util.replace
 import dagger.hilt.android.AndroidEntryPoint
@@ -24,8 +25,8 @@ class MainActivity : BaseActivity<MainActivityViewModel,ActivityMainBinding>() {
         super.onCreate(savedInstanceState)
         supportFragmentManager.replace(
             R.id.fragment_container,
-            AttributesFragment.TAG,
-            AttributesFragment.newInstance(),
+            RootAttrFragment.TAG,
+            RootAttrFragment.newInstance(),
             addToBackStack = false
         )
     }
