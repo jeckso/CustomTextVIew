@@ -181,7 +181,7 @@ abstract class BaseFragment<VM : BaseViewModel, VB : ViewBinding> : Fragment() {
     ): Job {
         val block: suspend (CoroutineScope.() -> Unit) = {
             repeatOnLifecycle(state) {
-                collect(block)
+                collect { block(it) }
             }
         }
         return when (rootJob) {

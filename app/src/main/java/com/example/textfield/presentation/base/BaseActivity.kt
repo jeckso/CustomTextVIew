@@ -17,6 +17,7 @@ import com.example.textfield.presentation.base.util.toBundle
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -55,7 +56,13 @@ abstract class BaseActivity<VM : BaseViewModel, VB : ViewBinding> : AppCompatAct
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        supportFragmentManager.fragments.forEach { it.onActivityResult(requestCode, resultCode, data) }
+        supportFragmentManager.fragments.forEach {
+            it.onActivityResult(
+                requestCode,
+                resultCode,
+                data
+            )
+        }
     }
 
     open fun handleBackNavigation(state: BackState) = with(state) {
@@ -74,7 +81,8 @@ abstract class BaseActivity<VM : BaseViewModel, VB : ViewBinding> : AppCompatAct
     ): Job {
         val block: suspend (CoroutineScope.() -> Unit) = {
             repeatOnLifecycle(state) {
-                collect(block)
+                collect { block(it) }
+
             }
         }
         return when (rootJob) {

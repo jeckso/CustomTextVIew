@@ -6,9 +6,9 @@
         <enum name="center" value="2" />
     </attr>
 
-    <attr name="font" format="integer">
-        <enum name="Steagal-Regular" value="0" />
-        <enum name="Steagal-Medium" value="1" />
+    <attr name="fontLocal" format="integer">
+        <enum name="SteagalRegular" value="0" />
+        <enum name="SteagalMedium" value="1" />
     </attr>
 
     <attr name="keyboardType" format="integer">
@@ -37,8 +37,8 @@
     </attr>
 
     <attr name="urlTextFont" format="integer">
-        <enum name="Steagal-Regular" value="0" />
-        <enum name="Steagal-Medium" value="1" />
+        <enum name="SteagalRegular" value="0" />
+        <enum name="SteagalMedium" value="1" />
     </attr>
 
 
@@ -52,13 +52,13 @@
         <attr name="borderColorG" format="integer" />
         <attr name="borderColorB" format="integer" />
         <attr name="borderColorClear" format="boolean" />
-        <attr name="borderWidth" format="integer" />
+        <attr name="borderWidthLocal" format="integer" />
         <attr name="borderPadding" format="integer" />
         <attr name="colorR" format="integer" />
         <attr name="colorG" format="integer" />
         <attr name="colorB" format="integer" />
         <attr name="colorClear" format="boolean" />
-        <attr name="content" format="string" />
+        <attr name="contentLocal" format="string" />
         <attr name="defaultText" format="string" />
         <attr name="dtColorR" format="integer" />
         <attr name="dtColorG" format="integer" />
@@ -66,7 +66,7 @@
         <attr name="dtColorClear" format="boolean" />
         <attr name="executionDelay" format="float" />
         <attr name="firstResponder" format="boolean" />
-        <attr name="font"/>
+        <attr name="fontLocal"/>
         <attr name="fontSize" format="integer" />
         <attr name="identifier" format="string" />
         <attr name="input" format="boolean" />
@@ -79,8 +79,8 @@
         <attr name="nextResponder" format="string" />
         <attr name="positionX" format="integer" />
         <attr name="positionY" format="integer" />
-        <attr name="positionXRel" format="integer" />
-        <attr name="positionYRel" format="integer" />
+        <attr name="positionXRel" />
+        <attr name="positionYRel" />
         <attr name="radius" format="integer" />
         <attr name="rightPadding" format="integer" />
         <attr name="rimPadding" format="integer" />
