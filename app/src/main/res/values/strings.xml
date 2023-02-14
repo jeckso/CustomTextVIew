@@ -3,4 +3,5 @@
     <string name="first_screen">Input For Field 1</string>
     <string name="second_screen">Input For Field 2</string>
     <string name="third_screen">Input For Field 3</string>
+    <string name="custom_screen">custom_screen</string>
 </resources>

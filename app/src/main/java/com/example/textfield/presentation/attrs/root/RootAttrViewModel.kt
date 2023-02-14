@@ -28,7 +28,8 @@ class RootAttrViewModel @Inject constructor(private val attributesRepository: At
 
     val attrs = flow {
         val attrs = attributesRepository.getAttributes().getOrNull()
-        emit(attrs)
+        val list = listOf(attrs,attrs,attrs)
+        emit(list)
     }
 
 }

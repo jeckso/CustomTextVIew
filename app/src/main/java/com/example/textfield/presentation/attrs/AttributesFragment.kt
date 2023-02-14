@@ -19,7 +19,8 @@ class AttributesFragment : BaseFragment<RootAttrViewModel, FragmentInputBinding>
     companion object {
         const val TAG = "AttributesFragment"
         const val TITLE_TAG = "title.tag"
-        fun newInstance(title: String): AttributesFragment {
+        const val TITLE_ORDER = "title.order"
+        fun newInstance(title: String, order: Int): AttributesFragment {
             return AttributesFragment().apply {
                 arguments = bundleOf(TITLE_TAG to title)
             }
@@ -42,7 +43,8 @@ class AttributesFragment : BaseFragment<RootAttrViewModel, FragmentInputBinding>
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel.attrs.asObserverJob {
-            adapter.items = it?.list?: listOf()
+            val order = arguments?.getInt(TITLE_ORDER) ?: 0
+            adapter.items = it[order]?.list ?: listOf()
         }
     }
 
@@ -52,7 +54,7 @@ class AttributesFragment : BaseFragment<RootAttrViewModel, FragmentInputBinding>
         viewBinding.buttonNext.setOnClickListener {
             viewModel.navigateNext()
         }
-        viewBinding.title.text = arguments?.getString(TITLE_TAG)?:""
+        viewBinding.title.text = arguments?.getString(TITLE_TAG) ?: ""
 
     }
 

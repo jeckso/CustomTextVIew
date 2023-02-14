@@ -15,6 +15,7 @@ import com.example.textfield.presentation.attrs.AttributesFragment
 import com.example.textfield.presentation.attrs.progress.AttrProgressItem
 import com.example.textfield.presentation.attrs.progress.AttrsProgressAdapter
 import com.example.textfield.presentation.base.BaseFragment
+import com.example.textfield.presentation.custom.CustomFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
@@ -83,15 +84,19 @@ class RootAttrFragment constructor() : BaseFragment<RootAttrViewModel, FragmentR
         tabs = listOf(
             AttrProgressItem(
                 R.string.first_screen,
-                AttributesFragment.newInstance("Input For Field 1")
+                AttributesFragment.newInstance("Input For Field 1", 0)
             ),
             AttrProgressItem(
                 R.string.second_screen,
-                AttributesFragment.newInstance("Input For Field 2")
+                AttributesFragment.newInstance("Input For Field 2", 1)
             ),
             AttrProgressItem(
                 R.string.third_screen,
-                AttributesFragment.newInstance("Input For Field 3")
+                AttributesFragment.newInstance("Input For Field 3", 2)
+            ),
+            AttrProgressItem(
+                R.string.custom_screen,
+                CustomFragment.newInstance()
             )
         )
     }
