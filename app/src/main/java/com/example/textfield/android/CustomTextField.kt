@@ -2,22 +2,34 @@ package com.example.textfield.android
 
 import android.content.Context
 import android.graphics.Color
-import android.graphics.Typeface
-import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.LayerDrawable
+import android.os.Build
 import android.text.InputType
 import android.text.InputType.TYPE_CLASS_NUMBER
 import android.text.InputType.TYPE_CLASS_TEXT
 import android.text.InputType.TYPE_NUMBER_VARIATION_NORMAL
 import android.text.InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
 import android.text.InputType.TYPE_TEXT_VARIATION_NORMAL
+import android.text.Layout
+import android.text.SpannableString
 import android.text.SpannableStringBuilder
+import android.text.Spanned
+import android.text.TextPaint
+import android.text.TextUtils
+import android.text.method.ScrollingMovementMethod
+import android.text.style.AbsoluteSizeSpan
+import android.text.style.AlignmentSpan
+import android.text.style.CharacterStyle
+import android.text.style.ForegroundColorSpan
+import android.text.style.URLSpan
+import android.text.style.UnderlineSpan
 import android.view.Gravity
-import android.view.inputmethod.EditorInfo
+import androidx.annotation.ColorInt
+import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import com.example.textfield.R
-import kotlin.properties.Delegates
+import org.intellij.lang.annotations.JdkConstants.FlowLayoutAlignment
 
 
 class CustomTextField(context: Context) : androidx.appcompat.widget.AppCompatEditText(context) {
@@ -27,6 +39,7 @@ class CustomTextField(context: Context) : androidx.appcompat.widget.AppCompatEdi
     }
 
     private lateinit var gradientDrawable: GradientDrawable
+    private lateinit var underlineDrawable: GradientDrawable
 
     private var shape: LayerDrawable? = (ContextCompat.getDrawable(
         this.context, com.example.textfield.R.drawable.bg_custom_text_border
@@ -34,6 +47,9 @@ class CustomTextField(context: Context) : androidx.appcompat.widget.AppCompatEdi
 
     private val DEFAULT_STROKE_WIDTH = 0
     private val DEFAULT_TEXT_COLOR = R.color.black
+    private val DEFAULT_TYPE_FACE = R.font.steagal_regular
+    private val DEFAULT_FONT_SIZE = 16
+    private val DEFAULT_UNDERLINE_THICKNESS = 0
 
     private var strokeColor: Int? = null
     private var strokeWidth: Int? = null
@@ -41,10 +57,25 @@ class CustomTextField(context: Context) : androidx.appcompat.widget.AppCompatEdi
     private var paddingRim: Int? = null
     private var paddingLeft: Int? = null
     private var paddingRight: Int? = null
+    private var currentTypeface: Int? = null
+    private var underThickness: Int? = null
+    private var underColor: Int? = null
+    private var urlColor: Int? = null
+    private var urlAlignLocal: Layout.Alignment? = null
+    private var urlLinkLocal: String? = null
+    private var urlTextLocal: String? = null
+    private var urlTextFontLocal: Int? = null
+    private var urlTextFontSizeLocal: Int? = null
+    private var urlUnderlineThicknessLocal: Int? = null
+    private var urlTextUnderlineColorLocal: Int? = null
+    private var urlTextUnderlineColorClearLocal: Boolean? = null
 
     init {
         gradientDrawable =
             shape!!.findDrawableByLayerId(com.example.textfield.R.id.shape) as GradientDrawable
+
+        underlineDrawable =
+            shape!!.findDrawableByLayerId(com.example.textfield.R.id.underline) as GradientDrawable
 
         // if you want to change the color of background of textview dynamically
         //gradientDrawable.setColor(ContextCompat.getColor(demo.this,R.color.colorAccent));
@@ -65,7 +96,7 @@ class CustomTextField(context: Context) : androidx.appcompat.widget.AppCompatEdi
 
     var align: Int?
         set(value) {
-            this.gravity = when (align) {
+            this.gravity = when (value) {
                 0 -> Gravity.START
                 1 -> Gravity.END
                 2 -> Gravity.CENTER
@@ -212,7 +243,7 @@ class CustomTextField(context: Context) : androidx.appcompat.widget.AppCompatEdi
 
     var input: Boolean?
         set(value) {
-            if (input == true) this.inputType =
+            if (value == true) this.inputType =
                 TYPE_CLASS_TEXT or TYPE_TEXT_VARIATION_NORMAL else InputType.TYPE_NULL
         }
         get() {
@@ -271,26 +302,251 @@ class CustomTextField(context: Context) : androidx.appcompat.widget.AppCompatEdi
 
     var radius: Int?
         set(value) {
-           gradientDrawable.cornerRadius = radius?.toFloat()?:0F
+            gradientDrawable.cornerRadius = value?.toFloat() ?: 0F
         }
         get() {
-            return  gradientDrawable.cornerRadius.toInt()
+            return gradientDrawable.cornerRadius.toInt()
         }
 
     var fontLocal: Int?
         set(value) {
-            when(value){
-                0 -> this.typeface = this.context.resources.getFont(R.font.)
+            this.typeface = this.context.resources.getFont(value ?: DEFAULT_TYPE_FACE)
+        }
+        get() {
+            return currentTypeface ?: DEFAULT_TYPE_FACE
+        }
+
+    var fontSize: Int?
+        set(value) {
+            this.textSize = (value ?: DEFAULT_FONT_SIZE).toFloat()
+        }
+        get() {
+            return this.textSize.toInt()
+        }
+
+
+    var identifier: Int?
+        set(value) {
+            this.id = value ?: generateViewId()
+        }
+        get() {
+            return this.id
+        }
+
+    var lineSpace: Int?
+        set(value) {
+            this.setLineSpacing(value?.toFloat() ?: 5F, 1F)
+        }
+        get() {
+            return this.lineSpacingExtra.toInt()
+        }
+
+    var lines: Int?
+        set(value) {
+            if (value != null) {
+                if (value == 1) this.maxLines = 1 else this.maxLines = (value - 1)
+            }
+            this.ellipsize = TextUtils.TruncateAt.END
+        }
+        get() {
+            return if (this.maxLines == 1) 1 else maxLines + 1
+        }
+
+    var scroll: Boolean?
+        set(value) {
+            if (value == false) {
+                this.movementMethod = null
+            } else if (value == true) {
+                this.isVerticalScrollBarEnabled = true
+                this.movementMethod = ScrollingMovementMethod()
             }
         }
         get() {
-            return  gradientDrawable.cornerRadius.toInt()
+            return this.movementMethod != null
+        }
+
+    var underlineThickness: Int?
+        set(value) {
+            underThickness = value ?: DEFAULT_UNDERLINE_THICKNESS
+            underlineDrawable.setStroke(
+                underThickness!!,
+                underColor ?: this.context.getColor(DEFAULT_TEXT_COLOR)
+            )
+        }
+        get() {
+            return underThickness ?: DEFAULT_UNDERLINE_THICKNESS
+        }
+
+    var underlineColor: Triple<Int, Int, Int>?
+        set(value) {
+            val color = getColor(value)
+            underColor = color
+        }
+        get() {
+            val colorCode = underColor ?: DEFAULT_TEXT_COLOR
+            return Triple(Color.red(colorCode), Color.green(colorCode), Color.blue(colorCode))
+        }
+
+    var underlineColorClear: Boolean?
+        set(value) {
+            if (value == true) {
+                underlineDrawable.setStroke(
+                    0,
+                    underColor ?: this.context.getColor(DEFAULT_TEXT_COLOR)
+                )
+                underThickness = 0
+            }
+        }
+        get() {
+            return underThickness == 0
+        }
+
+    var urlTextColor: Triple<Int, Int, Int>?
+        set(value) {
+            val color = getColor(value)
+            urlColor = color
+        }
+        get() {
+            val colorCode = urlColor ?: DEFAULT_TEXT_COLOR
+            return Triple(Color.red(colorCode), Color.green(colorCode), Color.blue(colorCode))
+        }
+
+    var urlColorClear: Boolean?
+        set(value) {
+            if (value == true) {
+                urlColor = DEFAULT_TEXT_COLOR
+            }
+        }
+        get() {
+            return urlColor == DEFAULT_TEXT_COLOR
+        }
+
+    var urlAlign: Int?
+        set(value) {
+            urlAlignLocal = when (value) {
+                0 -> Layout.Alignment.ALIGN_NORMAL
+                1 -> Layout.Alignment.ALIGN_OPPOSITE
+                2 -> Layout.Alignment.ALIGN_CENTER
+                else -> Layout.Alignment.ALIGN_CENTER
+            }
+        }
+        get() {
+            return when (urlAlignLocal) {
+                Layout.Alignment.ALIGN_NORMAL -> 0
+                Layout.Alignment.ALIGN_OPPOSITE -> 1
+                Layout.Alignment.ALIGN_CENTER -> 2
+                else -> 2
+            }
+        }
+
+    var urlLink: CharSequence?
+        set(value) {
+            urlLinkLocal = value.toString()
+        }
+        get() {
+            return urlLinkLocal
+        }
+
+    var urlTextContent: CharSequence?
+        set(value) {
+            urlTextLocal = value.toString()
+            val spannableString = SpannableString(this.text)
+            val url = value.toString()
+            val start = this.text.toString().indexOf(url)
+            val end = start + url.length
+            spannableString.setSpan(
+                URLSpan(urlLinkLocal),
+                start,
+                end,
+                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+            );
+            spannableString.setSpan(
+                AlignmentSpan.Standard(urlAlignLocal!!),
+                start,
+                end,
+                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+            spannableString.setSpan(
+                ForegroundColorSpan(urlColor ?: DEFAULT_TEXT_COLOR), start,
+                end,
+                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+            spannableString.setSpan(
+                AbsoluteSizeSpan(urlTextFontSizeLocal ?: DEFAULT_FONT_SIZE), start,
+                end,
+                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+            spannableString.setSpan(
+                ColoredUnderlineSpan(
+                    urlTextUnderlineColorLocal ?: this.context.getColor(
+                        DEFAULT_TEXT_COLOR
+                    ),
+                    urlUnderlineThicknessLocal?.toFloat() ?: DEFAULT_UNDERLINE_THICKNESS.toFloat()
+                ), start,
+                end,
+                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+        }
+        get() {
+            return urlTextLocal
+        }
+
+    var urlTextFont: Int?
+        set(value) {
+            this.urlTextFontLocal = value ?: DEFAULT_TYPE_FACE
+        }
+        get() {
+            return urlTextFontLocal ?: DEFAULT_TYPE_FACE
+        }
+
+    var urlTextFontSize: Int?
+        set(value) {
+            this.urlTextFontSizeLocal = value ?: DEFAULT_FONT_SIZE
+        }
+        get() {
+            return urlTextFontSizeLocal ?: DEFAULT_FONT_SIZE
         }
 
 
+    var urlUnderlineThickness: Int?
+        set(value) {
+            urlUnderlineThicknessLocal = value ?: DEFAULT_UNDERLINE_THICKNESS
+        }
+        get() {
+            return urlUnderlineThicknessLocal ?: DEFAULT_UNDERLINE_THICKNESS
+        }
+
+    var urlTextUnderlineColor: Triple<Int, Int, Int>?
+        set(value) {
+            val color = getColor(value)
+            urlTextUnderlineColorLocal = color
+        }
+        get() {
+            val colorCode = urlTextUnderlineColorLocal ?: DEFAULT_TEXT_COLOR
+            return Triple(Color.red(colorCode), Color.green(colorCode), Color.blue(colorCode))
+        }
+
+    var urlTextUnderlineColorClear: Boolean?
+        set(value) {
+            urlTextUnderlineColorClearLocal = value
+        }
+        get() {
+            return urlTextUnderlineColorClearLocal
+        }
 
 
     private fun getColor(value: Triple<Int, Int, Int>?): Int {
         return Color.rgb(value?.first ?: 0, value?.second ?: 0, value?.third ?: 0)
+    }
+
+    class ColoredUnderlineSpan constructor(
+        @ColorInt private val underlineColor: Int,
+        private val underlineThickness: Float,
+    ) : CharacterStyle() {
+        @RequiresApi(Build.VERSION_CODES.Q)
+        override fun updateDrawState(textPaint: TextPaint) {
+            textPaint.underlineColor = underlineColor
+            textPaint.underlineThickness = underlineThickness
+        }
     }
 }

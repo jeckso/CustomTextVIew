@@ -20,4 +20,18 @@
 
         </shape>
     </item>
+
+
+    <item
+        android:id="@+id/underline"
+        android:bottom="1dp"
+        android:left="-2dp"
+        android:right="-2dp"
+        android:top="-2dp">
+        <shape android:shape="rectangle" >
+            <stroke
+                android:width="0.5dp"
+                android:color="#4799E8" />
+        </shape>
+    </item>
 </layer-list>
