@@ -522,42 +522,45 @@ class CustomTextField(context: Context) : androidx.appcompat.widget.AppCompatEdi
     var urlTextContent: CharSequence?
         set(value) {
             urlTextLocal = value.toString()
-            val spannableString = SpannableString(this.text)
-            val url = value.toString()
-            val start = this.text.toString().indexOf(url)
-            val end = start + url.length
-            spannableString.setSpan(
-                URLSpan(urlLinkLocal),
-                start,
-                end,
-                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
-            );
-            spannableString.setSpan(
-                AlignmentSpan.Standard(urlAlignLocal!!),
-                start,
-                end,
-                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
-            )
-            spannableString.setSpan(
-                ForegroundColorSpan(urlColor ?: DEFAULT_TEXT_COLOR), start,
-                end,
-                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
-            )
-            spannableString.setSpan(
-                AbsoluteSizeSpan(urlTextFontSizeLocal ?: DEFAULT_FONT_SIZE), start,
-                end,
-                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
-            )
-            spannableString.setSpan(
-                ColoredUnderlineSpan(
-                    urlTextUnderlineColorLocal ?: this.context.getColor(
-                        DEFAULT_TEXT_COLOR
-                    ),
-                    urlUnderlineThicknessLocal?.toFloat() ?: DEFAULT_UNDERLINE_THICKNESS.toFloat()
-                ), start,
-                end,
-                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
-            )
+            if(value != null){
+                val spannableString = SpannableString(this.text)
+                val url = value.toString()
+                val start = this.text.toString().indexOf(url)
+                val end = start + url.length
+                spannableString.setSpan(
+                    URLSpan(urlLinkLocal),
+                    start,
+                    end,
+                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                );
+                spannableString.setSpan(
+                    AlignmentSpan.Standard(urlAlignLocal!!),
+                    start,
+                    end,
+                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                )
+                spannableString.setSpan(
+                    ForegroundColorSpan(urlColor ?: DEFAULT_TEXT_COLOR), start,
+                    end,
+                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                )
+                spannableString.setSpan(
+                    AbsoluteSizeSpan(urlTextFontSizeLocal ?: DEFAULT_FONT_SIZE), start,
+                    end,
+                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                )
+                spannableString.setSpan(
+                    ColoredUnderlineSpan(
+                        urlTextUnderlineColorLocal ?: this.context.getColor(
+                            DEFAULT_TEXT_COLOR
+                        ),
+                        urlUnderlineThicknessLocal?.toFloat() ?: DEFAULT_UNDERLINE_THICKNESS.toFloat()
+                    ), start,
+                    end,
+                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                )
+            }
+
         }
         get() {
             return urlTextLocal
@@ -609,18 +612,26 @@ class CustomTextField(context: Context) : androidx.appcompat.widget.AppCompatEdi
 
     var width: Int?
         set(value) {
-            this.layoutParams.width = value ?: -2
+            if(this.layoutParams!= null){
+                this.layoutParams.width = value ?: -2
+            }
         }
         get() {
-            return this.layoutParams.width
+            return if(this.layoutParams!= null){
+                this.layoutParams.width
+            }else -2
         }
 
     var height: Int?
         set(value) {
-            this.layoutParams.height = value ?: -2
+            if(this.layoutParams!= null){
+                this.layoutParams.height = value ?: -2
+            }
         }
         get() {
-            return this.layoutParams.height
+            return if(this.layoutParams!= null){
+                this.layoutParams.height
+            }else -2
         }
 
     var minWidth: Int?
@@ -646,7 +657,7 @@ class CustomTextField(context: Context) : androidx.appcompat.widget.AppCompatEdi
             }
         }
         get() {
-            return this.filters.filterIsInstance<InputFilter.LengthFilter>().first().max
+            return this.filters.filterIsInstance<InputFilter.LengthFilter>().firstOrNull()?.max ?: DEFAULT_MAX_STROKE
         }
 
     var shadowColor: Triple<Int, Int, Int>?

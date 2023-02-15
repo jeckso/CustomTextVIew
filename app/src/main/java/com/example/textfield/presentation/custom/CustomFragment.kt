@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.text.SpannableStringBuilder
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.generateViewId
 import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.fragment.app.viewModels
@@ -17,6 +18,9 @@ import com.example.textfield.presentation.base.BaseFragment
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import kotlin.reflect.KMutableProperty
+import kotlin.reflect.full.memberProperties
+import kotlin.reflect.jvm.isAccessible
 
 
 class CustomFragment : BaseFragment<RootAttrViewModel, FragmentCustomBinding>() {
@@ -41,29 +45,76 @@ class CustomFragment : BaseFragment<RootAttrViewModel, FragmentCustomBinding>() 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        viewModel.attrs.asObserverJob {
+            it.forEachIndexed { index, attributes ->
+                viewBinding.addField(attributes?.list!!)
+
+            }
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewBinding.addField()
+        // viewBinding.addField()
+
     }
 
-    private fun FragmentCustomBinding.addField() {
+    private fun FragmentCustomBinding.addField(list: List<IAttribute>) {
         val customField = CustomTextField(requireContext())
         val set = ConstraintSet()
-        customField.id = R.id.custom_text_view1
-        customField.bgColor = Triple(0, 255, 0)
-        customField.text = SpannableStringBuilder("HEREHEHRHHRHERHEH")
+        customField.id = generateViewId()
+        pasteAllProperties(customField, list)
+//        customField.bgColor = Triple(0, 255, 0)
+//        customField.text = SpannableStringBuilder("HEREHEHRHHRHERHEH")
 //        customField.borderColor = Triple(255, 0, 0)
-        Timber.e("ID OF TEXTVIEW ${customField.id}")
-        Timber.e("ID OF TEXTVIEW ${R.id.custom_text_view1}")
-        Timber.e("ID OF bgColor ${customField.bgColor}")
-        constraint.addView(customField,0)
+//        Timber.e("ID OF TEXTVIEW ${customField.id}")
+//        Timber.e("ID OF TEXTVIEW ${R.id.custom_text_view1}")
+//        Timber.e("ID OF bgColor ${customField.bgColor}")
+        constraint.addView(customField, 0)
         set.clone(constraint)
         set.connect(customField.id, ConstraintSet.TOP, constraint.id, ConstraintSet.TOP, 60)
         set.applyTo(constraint)
     }
 
-    private fun pasteAllProperties(customField : CustomTextField, list: List<IAttribute>){
+    private fun pasteAllProperties(customField: CustomTextField, list: List<IAttribute>) {
+
+        list.forEach { item ->
+            if (item.id.contains("_r")) {
+                Timber.e("ITEM ID ${item.id}")
+                val realId = item.id.substring(0, item.id.length - 1)
+                Timber.e("realId ${realId}")
+
+                val listRGB = list.filter { it.id.contains(realId) }
+                Timber.e("listRGB ${listRGB}")
+
+                val rgbValue = constructColorFromAttributes(listRGB)
+                val member = CustomTextField::class.memberProperties.find {
+                    it.name == item.id.substring(
+                        0,
+                        item.id.length - 2
+                    )
+                }
+                if (member is KMutableProperty<*>) {
+                    Timber.e("KMutableProperty")
+                    member.setter.call(customField, item.value)
+                }
+            }
+            val member = CustomTextField::class.memberProperties.find { it.name == item.id }
+            if (member is KMutableProperty<*>) {
+                Timber.e("KMutableProperty")
+                member.setter.call(customField, item.value)
+            }
+        }
     }
+
+    private fun constructColorFromAttributes(input: List<IAttribute>): Triple<Int, Int, Int> {
+        return Triple(
+            input[0].value as Int? ?: 0,
+            input[1].value as Int? ?: 0,
+            input[2].value as Int? ?: 0
+        )
+
+    }
+
+
 }

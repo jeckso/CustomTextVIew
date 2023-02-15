@@ -6,6 +6,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
@@ -22,14 +23,15 @@ class RootAttrViewModel @Inject constructor(private val attributesRepository: At
     val stepAction: Flow<Int> = _stepAction.filterNotNull()
 
 
-     fun navigateNext() = proceedUi {
+    fun navigateNext() = proceedUi {
         _stepAction.emit(NEXT_STEP)
     }
 
     val attrs = flow {
         val attrs = attributesRepository.getAttributes().getOrNull()
-        val list = listOf(attrs,attrs,attrs)
+        val list = listOf(attrs, attrs, attrs)
         emit(list)
     }
+
 
 }
