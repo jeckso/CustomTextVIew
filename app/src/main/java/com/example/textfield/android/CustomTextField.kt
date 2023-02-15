@@ -5,31 +5,38 @@ import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.LayerDrawable
 import android.os.Build
+import android.text.Editable
+import android.text.InputFilter
 import android.text.InputType
 import android.text.InputType.TYPE_CLASS_NUMBER
 import android.text.InputType.TYPE_CLASS_TEXT
 import android.text.InputType.TYPE_NUMBER_VARIATION_NORMAL
 import android.text.InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
 import android.text.InputType.TYPE_TEXT_VARIATION_NORMAL
+import android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD
 import android.text.Layout
 import android.text.SpannableString
 import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.TextPaint
 import android.text.TextUtils
+import android.text.TextWatcher
 import android.text.method.ScrollingMovementMethod
 import android.text.style.AbsoluteSizeSpan
 import android.text.style.AlignmentSpan
 import android.text.style.CharacterStyle
 import android.text.style.ForegroundColorSpan
 import android.text.style.URLSpan
-import android.text.style.UnderlineSpan
 import android.view.Gravity
+import android.view.ViewGroup
 import androidx.annotation.ColorInt
 import androidx.annotation.RequiresApi
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.alpha
 import com.example.textfield.R
-import org.intellij.lang.annotations.JdkConstants.FlowLayoutAlignment
+import java.util.Timer
+import java.util.TimerTask
 
 
 class CustomTextField(context: Context) : androidx.appcompat.widget.AppCompatEditText(context) {
@@ -45,11 +52,21 @@ class CustomTextField(context: Context) : androidx.appcompat.widget.AppCompatEdi
         this.context, com.example.textfield.R.drawable.bg_custom_text_border
     ) as LayerDrawable?)
 
+
+    val metrics = resources.displayMetrics
+
+    val DeviceTotalWidth = metrics.widthPixels
+    val DeviceTotalHeight = metrics.heightPixels
+
     private val DEFAULT_STROKE_WIDTH = 0
     private val DEFAULT_TEXT_COLOR = R.color.black
     private val DEFAULT_TYPE_FACE = R.font.steagal_regular
     private val DEFAULT_FONT_SIZE = 16
     private val DEFAULT_UNDERLINE_THICKNESS = 0
+    private val DEFAULT_MAX_STROKE = 10
+
+    private var timer = Timer()
+    private var DELAY: Long = 0
 
     private var strokeColor: Int? = null
     private var strokeWidth: Int? = null
@@ -69,6 +86,30 @@ class CustomTextField(context: Context) : androidx.appcompat.widget.AppCompatEdi
     private var urlUnderlineThicknessLocal: Int? = null
     private var urlTextUnderlineColorLocal: Int? = null
     private var urlTextUnderlineColorClearLocal: Boolean? = null
+    private var mShadowColor: Int? = null
+    private var mShadowRadius: Int? = null
+    private var mShadowOffset: Int? = null
+    private var mShadowHeight: Int? = null
+    private var mShadowWidth: Int? = null
+    private var mShadowMinWidth: Int? = null
+    private var mShadowMinHeight: Int? = null
+    private var mDynamicHeight: Boolean = false
+    private var mNextResponder: String? = null
+    private var mId: String? = null
+    private var mXRel: Int? = null
+    private var mYRel: Int? = null
+    private var mY: Int? = null
+    private var mX: Int? = null
+
+    interface CustomTextFieldEventListener {
+        fun onNextResponder()
+    }
+
+    private var mEventListener: CustomTextFieldEventListener? = null
+
+    fun setEventListener(mEventListener: CustomTextFieldEventListener?) {
+        this.mEventListener = mEventListener
+    }
 
     init {
         gradientDrawable =
@@ -91,6 +132,37 @@ class CustomTextField(context: Context) : androidx.appcompat.widget.AppCompatEdi
         )
 
         this.background = shape
+
+        this.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(
+                s: CharSequence, start: Int, count: Int,
+                after: Int
+            ) {
+            }
+
+            override fun onTextChanged(
+                s: CharSequence, start: Int, before: Int,
+                count: Int
+            ) {
+                timer.cancel()
+            }
+
+            override fun afterTextChanged(s: Editable) {
+                //avoid triggering event when text is too short
+                if (maxStroke != null) {
+                    if (s.length >= maxStroke!!) {
+                        timer = Timer()
+                        timer.schedule(object : TimerTask() {
+                            override fun run() {
+                                mEventListener?.apply { onNextResponder() }
+                            }
+                        }, DELAY)
+                    }
+                }
+
+            }
+        })
+
     }
 
 
@@ -325,12 +397,12 @@ class CustomTextField(context: Context) : androidx.appcompat.widget.AppCompatEdi
         }
 
 
-    var identifier: Int?
+    var identifier: String?
         set(value) {
-            this.id = value ?: generateViewId()
+            this.mId = value ?: this.id.toString()
         }
         get() {
-            return this.id
+            return this.mId
         }
 
     var lineSpace: Int?
@@ -533,6 +605,222 @@ class CustomTextField(context: Context) : androidx.appcompat.widget.AppCompatEdi
         get() {
             return urlTextUnderlineColorClearLocal
         }
+
+
+    var width: Int?
+        set(value) {
+            this.layoutParams.width = value ?: -2
+        }
+        get() {
+            return this.layoutParams.width
+        }
+
+    var height: Int?
+        set(value) {
+            this.layoutParams.height = value ?: -2
+        }
+        get() {
+            return this.layoutParams.height
+        }
+
+    var minWidth: Int?
+        set(value) {
+            this.minimumWidth = value ?: 0
+        }
+        get() {
+            return this.minimumWidth
+        }
+
+    var minHeight: Int?
+        set(value) {
+            this.minimumHeight = value ?: 0
+        }
+        get() {
+            return this.minimumHeight
+        }
+
+    var maxStroke: Int?
+        set(value) {
+            if (value != null) {
+                this.filters = arrayOf(InputFilter.LengthFilter(value))
+            }
+        }
+        get() {
+            return this.filters.filterIsInstance<InputFilter.LengthFilter>().first().max
+        }
+
+    var shadowColor: Triple<Int, Int, Int>?
+        set(value) {
+            val color = getColor(value)
+            mShadowColor = color
+        }
+        get() {
+            val colorCode = mShadowColor ?: DEFAULT_TEXT_COLOR
+            return Triple(Color.red(colorCode), Color.green(colorCode), Color.blue(colorCode))
+        }
+
+    var shadowColorClear: Boolean?
+        set(value) {
+            if (value == true) {
+                mShadowColor = DEFAULT_TEXT_COLOR
+            }
+        }
+        get() {
+            return mShadowColor == DEFAULT_TEXT_COLOR
+        }
+
+    var shadowOpacity: Int?
+        set(value) {
+            mShadowColor = Color.argb(
+                value ?: 0,
+                Color.red(mShadowColor ?: 0),
+                Color.green(mShadowColor ?: 0),
+                Color.blue(mShadowColor ?: 0)
+            )
+        }
+        get() {
+            return mShadowColor?.alpha ?: 0
+        }
+
+    var shadowRadius: Int?
+        set(value) {
+            mShadowRadius = value ?: 0
+            this.setShadowLayer(
+                (value ?: 0).toFloat(),
+                mShadowOffset?.toFloat() ?: 0F,
+                mShadowOffset?.toFloat() ?: 0F,
+                mShadowColor ?: DEFAULT_TEXT_COLOR
+            )
+
+        }
+        get() {
+            return mShadowRadius ?: 0
+        }
+
+    var shadowOffset: Int?
+        set(value) {
+            mShadowOffset = value ?: 0
+        }
+        get() {
+            return mShadowOffset ?: 0
+        }
+
+    var shadowHeight: Int?
+        set(value) {
+            mShadowHeight = value ?: 0
+        }
+        get() {
+            return mShadowHeight ?: 0
+        }
+
+    var shadowWidth: Int?
+        set(value) {
+            mShadowWidth = value ?: 0
+        }
+        get() {
+            return mShadowWidth ?: 0
+        }
+
+    var shadowMinHeight: Int?
+        set(value) {
+            mShadowMinHeight = value ?: 0
+
+        }
+        get() {
+            return mShadowMinHeight ?: 0
+        }
+
+    var shadowMinWidth: Int?
+        set(value) {
+            mShadowMinWidth = value ?: 0
+        }
+        get() {
+            return mShadowMinWidth ?: 0
+        }
+
+    var secureTextEntry: Boolean?
+        set(value) {
+            if (value == true) this.inputType =
+                TYPE_CLASS_TEXT or TYPE_TEXT_VARIATION_PASSWORD
+        }
+        get() {
+            return this.inputType == TYPE_CLASS_TEXT or TYPE_TEXT_VARIATION_PASSWORD
+        }
+
+    var dynamicHeight: Boolean?
+        set(value) {
+            if (value == true) this.layoutParams = ConstraintLayout.LayoutParams(
+                width ?: minWidth ?: ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            )
+        }
+        get() {
+            return this.layoutParams.height == ViewGroup.LayoutParams.WRAP_CONTENT
+        }
+
+    var firstResponder: Boolean? // Should keyboard appear on the screen??
+        set(value) {
+            if (input == true) {
+                if (value == true) {
+                    this.requestFocus()
+                }
+            }
+        }
+        get() {
+            return this.layoutParams.height == ViewGroup.LayoutParams.WRAP_CONTENT
+        }
+
+    var executionDelay: Int?
+        set(value) {
+            DELAY = value?.toLong() ?: 0L
+        }
+        get() {
+            return DELAY.toInt()
+        }
+
+    var nextResponder: String?
+        set(value) {
+            mNextResponder = value
+        }
+        get() {
+            return mNextResponder
+        }
+
+
+    var xRel: Int?
+        set(value) {
+            this.mXRel = when (value) {
+                0 -> Gravity.START
+                1 -> Gravity.END
+                2 -> Gravity.CENTER
+                else -> Gravity.CENTER
+            }
+        }
+        get() = this.mXRel
+
+    var yRel: Int?
+        set(value) {
+            this.mYRel = when (value) {
+                0 -> Gravity.TOP
+                1 -> Gravity.BOTTOM
+                2 -> Gravity.CENTER
+                else -> Gravity.CENTER
+            }
+        }
+        get() = this.mYRel
+
+    var x: Int?
+        set(value) {
+            mX = value
+
+        }
+        get() = this.mX
+
+    var y: Int?
+        set(value) {
+            mY = value
+        }
+        get() = this.mY
 
 
     private fun getColor(value: Triple<Int, Int, Int>?): Int {

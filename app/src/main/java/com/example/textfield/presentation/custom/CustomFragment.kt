@@ -7,11 +7,15 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import com.example.textfield.R
 import com.example.textfield.android.CustomTextField
+import com.example.textfield.data.model.IAttribute
 import com.example.textfield.databinding.FragmentCustomBinding
 import com.example.textfield.presentation.attrs.root.RootAttrViewModel
 import com.example.textfield.presentation.base.BaseFragment
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
 
@@ -58,5 +62,8 @@ class CustomFragment : BaseFragment<RootAttrViewModel, FragmentCustomBinding>() 
         set.clone(constraint)
         set.connect(customField.id, ConstraintSet.TOP, constraint.id, ConstraintSet.TOP, 60)
         set.applyTo(constraint)
+    }
+
+    private fun pasteAllProperties(customField : CustomTextField, list: List<IAttribute>){
     }
 }
