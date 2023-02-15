@@ -1,29 +1,25 @@
 package com.example.textfield.presentation.custom
 
 import android.os.Bundle
-import android.text.SpannableStringBuilder
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.generateViewId
 import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintSet
+import androidx.core.view.children
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
-import com.example.textfield.R
 import com.example.textfield.android.CustomTextField
 import com.example.textfield.data.model.IAttribute
 import com.example.textfield.databinding.FragmentCustomBinding
 import com.example.textfield.presentation.attrs.root.RootAttrViewModel
 import com.example.textfield.presentation.base.BaseFragment
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
 import timber.log.Timber
 import kotlin.reflect.KMutableProperty
 import kotlin.reflect.full.memberProperties
-import kotlin.reflect.jvm.isAccessible
 
 
-class CustomFragment : BaseFragment<RootAttrViewModel, FragmentCustomBinding>() {
+class CustomFragment : BaseFragment<RootAttrViewModel, FragmentCustomBinding>(),
+    CustomTextField.CustomTextFieldEventListener {
 
     companion object {
         const val TAG = "AttributesFragment"
@@ -107,6 +103,22 @@ class CustomFragment : BaseFragment<RootAttrViewModel, FragmentCustomBinding>() 
             input[1].value as Int? ?: 0,
             input[2].value as Int? ?: 0
         )
+
+    }
+
+    override fun onNextResponder(nextResponder: String?) {
+        setFocusByLocalId(nextResponder!!)    //Write your own logic
+    }
+
+    private fun setFocusByLocalId(id: String) {
+        with(viewBinding) {
+            val count = constraint.childCount
+            constraint.children.map {
+                if (it is CustomTextField) {
+                    if (it.identifier == id) it.requestFocus()
+                }
+            }
+        }
 
     }
 

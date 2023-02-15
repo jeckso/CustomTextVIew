@@ -102,7 +102,7 @@ class CustomTextField(context: Context) : androidx.appcompat.widget.AppCompatEdi
     private var mX: Int? = null
 
     interface CustomTextFieldEventListener {
-        fun onNextResponder()
+        fun onNextResponder(nextResponder: String?)
     }
 
     private var mEventListener: CustomTextFieldEventListener? = null
@@ -154,7 +154,7 @@ class CustomTextField(context: Context) : androidx.appcompat.widget.AppCompatEdi
                         timer = Timer()
                         timer.schedule(object : TimerTask() {
                             override fun run() {
-                                mEventListener?.apply { onNextResponder() }
+                                mEventListener?.apply { onNextResponder(nextResponder) }
                             }
                         }, DELAY)
                     }
