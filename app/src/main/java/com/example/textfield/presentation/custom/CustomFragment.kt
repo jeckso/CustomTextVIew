@@ -1,15 +1,19 @@
 package com.example.textfield.presentation.custom
 
 import android.os.Bundle
+import android.text.SpannableStringBuilder
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
-import androidx.core.os.bundleOf
+import androidx.constraintlayout.widget.ConstraintSet
 import androidx.fragment.app.viewModels
+import com.example.textfield.R
+import com.example.textfield.android.CustomTextField
 import com.example.textfield.databinding.FragmentCustomBinding
-import com.example.textfield.databinding.FragmentInputBinding
-import com.example.textfield.presentation.attrs.AttributesFragment
 import com.example.textfield.presentation.attrs.root.RootAttrViewModel
 import com.example.textfield.presentation.base.BaseFragment
+import timber.log.Timber
+
 
 class CustomFragment : BaseFragment<RootAttrViewModel, FragmentCustomBinding>() {
 
@@ -33,5 +37,26 @@ class CustomFragment : BaseFragment<RootAttrViewModel, FragmentCustomBinding>() 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        viewBinding.addField()
+    }
+
+    private fun FragmentCustomBinding.addField() {
+        val customField = CustomTextField(requireContext())
+        val set = ConstraintSet()
+        customField.id = R.id.custom_text_view1
+        customField.bgColor = Triple(0, 255, 0)
+        customField.text = SpannableStringBuilder("HEREHEHRHHRHERHEH")
+//        customField.borderColor = Triple(255, 0, 0)
+        Timber.e("ID OF TEXTVIEW ${customField.id}")
+        Timber.e("ID OF TEXTVIEW ${R.id.custom_text_view1}")
+        Timber.e("ID OF bgColor ${customField.bgColor}")
+        constraint.addView(customField,0)
+        set.clone(constraint)
+        set.connect(customField.id, ConstraintSet.TOP, constraint.id, ConstraintSet.TOP, 60)
+        set.applyTo(constraint)
     }
 }

@@ -53,7 +53,7 @@
         <attr name="borderColorB" format="integer" />
         <attr name="borderColorClear" format="boolean" />
         <attr name="borderWidthLocal" format="integer" />
-        <attr name="borderPadding" format="integer" />
+        <attr name="bottomPadding" format="integer" />
         <attr name="colorR" format="integer" />
         <attr name="colorG" format="integer" />
         <attr name="colorB" format="integer" />
